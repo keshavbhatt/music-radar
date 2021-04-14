@@ -1,0 +1,60 @@
+name: music-radar
+version: git
+summary: Music Recognition app for Linux Desktop
+description: |
+  Music Radar is a little music recognition app for Linux Desktop, record music from your microphone or system to identify the song playing.
+grade: stable
+confinement: strict
+icon: snap/gui/icon.png
+base: core18
+
+architectures:
+  - build-on: amd64
+    run-on: amd64
+
+apps:
+  music-radar:
+    command: desktop-launch music-radar
+    environment:
+       DISABLE_WAYLAND: 1
+    desktop: usr/share/applications/music-radar.desktop
+    plugs:
+        - desktop
+        - desktop-legacy
+        - gsettings
+        - home
+        - opengl
+        - audio-playback
+        - audio-record
+        - unity7
+        - x11
+        - network
+        - wayland
+plugs:
+  gsettings:
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
+  qt513:
+    interface: content
+    target: $SNAP/qt513
+    default-provider: qt513
+
+parts:
+   snap-launcher:
+     plugin: dump
+     source: snap_launcher/
+     override-build: |
+            snapcraftctl build
+            sed -i 's|Icon=.*|Icon=${SNAP}/meta/gui/icon.png|g' ${SNAPCRAFT_PART_SRC}/music-radar.desktop
+            mkdir -p ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/
+            cp -rf ${SNAPCRAFT_PART_SRC}/music-radar.desktop ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/music-radar.desktop
