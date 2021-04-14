@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+GenericName=Music Radar
+Name[en_US]=Music Radar
+Comment=Music recognition app 
+Name=Music Radar
+Type=Application
+Icon=${SNAP}/meta/gui/icon.png
+Keywords=Shazam;Recognition;Music
+Exec=music-radar %F
+Categories=Audio;Qt;
+Terminal=false
+StartupNotify=false
