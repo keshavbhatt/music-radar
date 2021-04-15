@@ -39,6 +39,7 @@ signals:
     void enableItemActions(bool enable =  false);
     void showPutKeyError(const QString error);
     void showFixKeyError(const QString error);
+    void showJson(QString jsonPath);
 private slots:
     void on_cancelButton_clicked();
 

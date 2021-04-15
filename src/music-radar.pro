@@ -32,11 +32,13 @@ VERSION = 1.0
 DEFINES += VERSIONSTR=\\\"$${VERSION}\\\"
 
 include(lib/QtStyler/qtstyler.pri)
+include(lib/Json/json.pri)
 
 SOURCES += \
         about.cpp \
         elidedlabel.cpp \
         home.cpp \
+        iteminfowidget.cpp \
         main.cpp \
         mainwindow.cpp \
         pulseutils.cpp \
@@ -54,6 +56,7 @@ HEADERS += \
         about.h \
         elidedlabel.h \
         home.h \
+        iteminfowidget.h \
         mainwindow.h \
         pulseutils.h \
         qaudiolevel.h \
@@ -69,6 +72,7 @@ HEADERS += \
 FORMS += \
         about.ui \
         home.ui \
+        iteminfowidget.ui \
         mainwindow.ui \
         qaudiowaveform.ui \
         recordingpage.ui \

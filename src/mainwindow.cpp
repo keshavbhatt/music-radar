@@ -23,6 +23,15 @@ MainWindow::MainWindow(QWidget *parent) :
     homeWidget          = new Home(QAudioDeviceInfo::availableDevices(QAudio::AudioInput),this);
     recordingPageWidget = new RecordingPage(this);
 
+    connect(recordingPageWidget,&RecordingPage::showJson,[=](QString jsonPath){
+        ItemInfoWidget * info = new ItemInfoWidget(this);
+        info->setWindowTitle(QApplication::applicationName()+" | "+tr("Item info"));
+        info->setWindowFlag(Qt::Dialog);
+        info->load(jsonPath);
+        info->setAttribute(Qt::WA_DeleteOnClose);
+        info->show();
+    });
+
     connect(recordingPageWidget,&RecordingPage::showFixKeyError,[=](QString error){
         QMessageBox msgBox;
         msgBox.setText(QApplication::applicationName()+" | Incorrect API Token");

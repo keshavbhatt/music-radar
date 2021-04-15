@@ -110,6 +110,8 @@ void RecordingPage::startRecording(QString selectedDevice)
         if(QString(bytes).contains("Time",Qt::CaseInsensitive))
         {
             ui->statusLabel->setText(QString(bytes).split(";").first().trimmed().simplified());
+            if(ui->statusLabel->text().contains(" 20.")) //dirty
+                on_cancelButton_clicked();
         }else{
             debug.append(bytes);
         }
@@ -393,7 +395,7 @@ void RecordingPage::showItemInfo()
     if(itemWidget){
         QString itemId   = itemWidget->objectName().split("item_").last().trimmed();
         QString filePath = historyPath+itemId+".json";
-        //read file show info dialog;
+        emit showJson(filePath);
     }
     if(ui->resultListWidget->count()==0)
         emit enableItemActions(false);

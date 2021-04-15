@@ -13,6 +13,7 @@
 #include "home.h"
 #include "recordingpage.h"
 #include "settingswidget.h"
+#include "iteminfowidget.h"
 
 namespace Ui {
 class MainWindow;
