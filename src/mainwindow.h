@@ -4,11 +4,15 @@
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QSettings>
+#include <QDebug>
+#include <QPushButton>
+
 
 #include "about.h"
 
 #include "home.h"
 #include "recordingpage.h"
+#include "settingswidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,17 +32,22 @@ private slots:
     void createActions();
     void showAbout();
 
+    void showSettings();
+    void init_settings();
 private:
     Ui::MainWindow *ui;
 
     QAction *aboutAction;
     QAction *backAction;
     QAction *historyAction;
-    QAction *itemDeleteAction;
+    QAction *itemDeleteAction, *itemInfoAction;
+    QAction *settingsAction;
 
     Home *homeWidget = nullptr;
     RecordingPage *recordingPageWidget = nullptr;
     QSettings settings;
+
+    SettingsWidget *settingsWidget = nullptr;
 };
 
 #endif // MAINWINDOW_H

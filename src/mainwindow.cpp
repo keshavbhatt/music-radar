@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDebug>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QMargins m = ui->mainToolBar->layout()->contentsMargins();
+    ui->mainToolBar->setContentsMargins(m.left(),m.top(),m.right(),m.top());
 
     setWindowTitle(QApplication::applicationName());
     setWindowIcon(QIcon(":/icons/app/icon-256.png"));
@@ -21,8 +23,41 @@ MainWindow::MainWindow(QWidget *parent) :
     homeWidget          = new Home(QAudioDeviceInfo::availableDevices(QAudio::AudioInput),this);
     recordingPageWidget = new RecordingPage(this);
 
+    connect(recordingPageWidget,&RecordingPage::showFixKeyError,[=](QString error){
+        QMessageBox msgBox;
+        msgBox.setText(QApplication::applicationName()+" | Incorrect API Token");
+        msgBox.setText(error);
+        msgBox.setInformativeText("Do you want to correct API Token now?");
+
+        QPushButton *settingsButton = msgBox.addButton(tr("Yes, correct API Token"), QMessageBox::ActionRole);
+        QPushButton *abortButton = msgBox.addButton(QMessageBox::No);
+        msgBox.exec();
+        if (msgBox.clickedButton() == settingsButton) {
+          settingsAction->trigger();
+        } else if (msgBox.clickedButton() == abortButton) {
+         msgBox.close();
+        }
+    });
+
+    connect(recordingPageWidget,&RecordingPage::showPutKeyError,[=](QString error){
+        QMessageBox msgBox;
+        msgBox.setText(QApplication::applicationName()+" | Need API Token");
+        msgBox.setText(error);
+        msgBox.setInformativeText("Do you want to set API Token now?");
+
+        QPushButton *settingsButton = msgBox.addButton(tr("Yes, set API Token"), QMessageBox::ActionRole);
+        QPushButton *abortButton = msgBox.addButton(QMessageBox::No);
+        msgBox.exec();
+        if (msgBox.clickedButton() == settingsButton) {
+          settingsAction->trigger();
+        } else if (msgBox.clickedButton() == abortButton) {
+         msgBox.close();
+        }
+    });
+
     connect(recordingPageWidget,&RecordingPage::enableItemActions,[=](bool enable){
        itemDeleteAction->setEnabled(enable);
+       itemInfoAction->setEnabled(enable);
     });
 
     connect(recordingPageWidget,&RecordingPage::back,[=](){
@@ -40,7 +75,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stackedWidget->addWidget(homeWidget);
     ui->stackedWidget->addWidget(recordingPageWidget);
 
+    init_settings();
+
     createActions();
+
 }
 
 MainWindow::~MainWindow()
@@ -58,27 +96,25 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::createActions()
 {
-    aboutAction = new QAction(tr("&About"), this);
-    aboutAction->setIcon(QIcon(":/icons/app/icon-32.png"));
-    aboutAction->setIconText("About");
+    aboutAction      = new QAction(QIcon(":/icons/app/icon-32.png"),tr("&About"), this);
+    backAction       = new QAction(QIcon(":/icons/arrow-left-circle-line.png"),tr("&Back"), this);
+    historyAction    = new QAction(QIcon(":/icons/time-line.png"),tr("&History"), this);
+    itemDeleteAction = new QAction(QIcon(":/icons/delete-bin-5-line.png"),tr("Delete"),this);
+    itemInfoAction   = new QAction(QIcon(":/icons/information-line.png"),tr("Info"),this);
+    settingsAction   = new QAction(QIcon(":/icons/setting-line.png"),tr("Settings"),this);
 
-    backAction = new QAction(tr("&Back"), this);
-    backAction->setIcon(QIcon(":/icons/arrow-left-circle-line.png"));
-    backAction->setIconText("Back");
-
-    historyAction = new QAction(tr("&History"), this);
-    historyAction->setIcon(QIcon(":/icons/time-line.png"));
-    historyAction->setIconText("History");
-
-    itemDeleteAction = new QAction(QIcon(":/icons/delete-bin-5-line.png"),"Delete",this);
+    connect(settingsAction, &QAction::triggered,this,&MainWindow::showSettings);
 
     connect(itemDeleteAction, &QAction::triggered,recordingPageWidget,&RecordingPage::deleteSelected);
+
+    connect(itemInfoAction, &QAction::triggered,recordingPageWidget,&RecordingPage::showItemInfo);
 
     connect(aboutAction, &QAction::triggered, this, &MainWindow::showAbout);
 
     connect(backAction, &QAction::triggered,[=]()
     {
         backAction->setEnabled(false);
+        emit recordingPageWidget->enableItemActions(false);
         recordingPageWidget->clearDebug();
         recordingPageWidget->stopRecording();
         recordingPageWidget->stopAllPlayers();
@@ -99,7 +135,6 @@ void MainWindow::createActions()
 
     ui->mainToolBar->addSeparator();
 
-
     ui->mainToolBar->addAction(historyAction);
     historyAction->setEnabled(true);
 
@@ -108,14 +143,38 @@ void MainWindow::createActions()
     ui->mainToolBar->addAction(itemDeleteAction);
     itemDeleteAction->setEnabled(false);
 
+    ui->mainToolBar->addAction(itemInfoAction);
+    itemInfoAction->setEnabled(false);
+
     QWidget* hSpacer= new QWidget(this);
     hSpacer->setStyleSheet("background-color:transparent");
     hSpacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
 
     ui->mainToolBar->addWidget(hSpacer);
 
+    ui->mainToolBar->addAction(settingsAction);
+
     ui->mainToolBar->addAction(aboutAction);
 
+}
+
+void MainWindow::init_settings()
+{
+    settingsWidget = new SettingsWidget(this);
+    settingsWidget->setWindowTitle(QApplication::applicationName()+"| "+tr("Settings"));
+    settingsWidget->setWindowFlag(Qt::Dialog);
+    settingsWidget->setWindowModality(Qt::WindowModal);
+    settingsWidget->restoreGeometry(settings.value("settingsGeometry").toByteArray());
+}
+
+void MainWindow::showSettings()
+{
+    if(!settingsWidget->isVisible()){
+        settingsWidget->show();
+    }else{
+        settingsWidget->raise();
+        settingsWidget->activateWindow();
+    }
 }
 
 void MainWindow::showAbout()
