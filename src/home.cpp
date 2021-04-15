@@ -102,6 +102,7 @@ void Home::on_fromSpeaker_toggled(bool checked)
 void Home::on_recordToolButton_clicked()
 {
     emit startRecording(getSelectedDevice());
+    qApp->processEvents();
 }
 
 QString Home::getSelectedDevice()
