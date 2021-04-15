@@ -22,7 +22,7 @@ About::About(QWidget *parent) :
     donateLink          = "https://paypal.me/keshavnrj/10";
     moreAppsLink        = "https://snapcraft.io/search?q=keshavnrj";
 
-    appSourceCodeLink   = "https://github.com/music-radar";
+    appSourceCodeLink   = "https://github.com/keshavbhatt/music-radar";
     appRateLink         = "snap://music-radar";
 
 
