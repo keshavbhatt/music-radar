@@ -3,6 +3,7 @@
 
 #include <QAudioDeviceInfo>
 #include <QWidget>
+#include <QSettings>
 
 #include "pulseutils.h"
 
@@ -44,6 +45,9 @@ private:
 
     QString defaultSink;
     QString defaultSource;
+
+    QSettings settings;
+
 };
 
 #endif // HOME_H
