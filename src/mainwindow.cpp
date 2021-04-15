@@ -79,6 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
        recordingPageWidget->animate();
        recordingPageWidget->stopRecording();
        recordingPageWidget->startRecording(selectedDevice);
+       qApp->processEvents();
     });
 
     ui->stackedWidget->addWidget(homeWidget);
