@@ -7,6 +7,7 @@ Music Radar is music recognition application for Linux Desktop
 - Record from Microphone or sound coming from other applications on your system.
 - Saves history of what you have searched.
 - Allows playing preview of identified song, Search it on Youtube, Open it directly in Spotify etc.
+- Dark theme support.
 
 ## Install:
 
@@ -18,3 +19,5 @@ Music Radar is music recognition application for Linux Desktop
 
 ![Music Radar for Linux Desktop](https://github.com/keshavbhatt/music-radar/blob/main/screenshots/1.png?raw=true)
 ![Music Radar for Linux Desktop](https://github.com/keshavbhatt/music-radar/blob/main/screenshots/2.png?raw=true)
+![Music Radar for Linux Desktop](https://github.com/keshavbhatt/music-radar/blob/main/screenshots/3.png?raw=true)
+![Music Radar for Linux Desktop](https://github.com/keshavbhatt/music-radar/blob/main/screenshots/4.png?raw=true)
