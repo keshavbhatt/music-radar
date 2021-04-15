@@ -26,17 +26,19 @@ public:
     ~RecordingPage();
 
 public slots:
-     void animate();
+    void animate();
     void stopRecording();
     void startRecording(QString selectedDevice);
     void stopAllPlayers();
     void showHistory();
     void clearDebug();
     void deleteSelected();
+    void showItemInfo();
 signals:
     void back();
     void enableItemActions(bool enable =  false);
-
+    void showPutKeyError(const QString error);
+    void showFixKeyError(const QString error);
 private slots:
     void on_cancelButton_clicked();
 
@@ -65,6 +67,8 @@ private:
     QTime m_timeAdded;
 
     WaitingSpinnerWidget *_loader = nullptr;
+
+    QSettings settings;
 };
 
 #endif // RECORDINGPAGE_H

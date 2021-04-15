@@ -213,10 +213,13 @@ void RecordingPage::processRecording()
     ui->statusLabel->setText("Please wait...");
     _loader->start();
 
+    QString t = "";
+    QByteArray base64EncodedKey = settings.value("yek",t.toUtf8().toBase64()).toByteArray();
+
     QString bound="margin";
     QByteArray data(QString("--" + bound + "\r\n").toLatin1());
     data.append("Content-Disposition: form-data; name=\"api_token\"\r\n\r\n");
-    data.append("ced300b2eff606699838a2fd35df2bd4\r\n");
+    data.append(QString(QByteArray::fromBase64(base64EncodedKey))+"\r\n");
     data.append("--" + bound + "\r\n");
     data.append("Content-Disposition: form-data; name=\"return\"\r\n\r\n");
     data.append("spotify\r\n");
@@ -290,7 +293,14 @@ void RecordingPage::uploadFinished(bool fromHistory, QString historyItemFilePath
     if(status.contains("error",Qt::CaseInsensitive)){
         //get error message
         QString error_message = jsonObj.value("error").toObject().value("error_message").toString();
-        QMessageBox::critical(this,"Error",error_message);
+        int error_code        = jsonObj.value("error").toObject().value("error_code").toInt();
+        if(error_code == 901){
+            emit showPutKeyError(error_message);
+        }else if(error_code == 900){
+            emit showFixKeyError(error_message);
+        }else{
+            QMessageBox::critical(this,"Error",error_message);
+        }
         return;
     }
     if (status.contains("success",Qt::CaseInsensitive) && jsonObj.value("result").isNull()) {
@@ -374,6 +384,19 @@ void RecordingPage::stopAllPlayers()
             }
         }
     }
+}
+
+void RecordingPage::showItemInfo()
+{
+    QListWidgetItem *item = ui->resultListWidget->currentItem();
+    QWidget *itemWidget = ui->resultListWidget->itemWidget(item);
+    if(itemWidget){
+        QString itemId   = itemWidget->objectName().split("item_").last().trimmed();
+        QString filePath = historyPath+itemId+".json";
+        //read file show info dialog;
+    }
+    if(ui->resultListWidget->count()==0)
+        emit enableItemActions(false);
 }
 
 
