@@ -1,0 +1,3 @@
+[submodule "src/lib/QtStyler"]
+	path = src/lib/QtStyler
+	url = ../../chrizbee/QtStyler

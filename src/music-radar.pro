@@ -31,6 +31,7 @@ CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 VERSION = 1.0
 DEFINES += VERSIONSTR=\\\"$${VERSION}\\\"
 
+include(lib/QtStyler/qtstyler.pri)
 
 SOURCES += \
         about.cpp \
@@ -44,6 +45,7 @@ SOURCES += \
         recordingpage.cpp \
         remotepixmaplabel.cpp \
         rungaurd.cpp \
+        settingswidget.cpp \
         songitem.cpp \
         utils.cpp \
         waitingspinnerwidget.cpp
@@ -59,6 +61,7 @@ HEADERS += \
         recordingpage.h \
         remotepixmaplabel.h \
         rungaurd.h \
+        settingswidget.h \
         songitem.h \
         utils.h \
         waitingspinnerwidget.h
@@ -69,6 +72,7 @@ FORMS += \
         mainwindow.ui \
         qaudiowaveform.ui \
         recordingpage.ui \
+        settingswidget.ui \
         songitem.ui
 
 # Default rules for deployment.
