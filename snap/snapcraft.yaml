@@ -50,6 +50,11 @@ plugs:
     default-provider: qt513
 
 parts:
+   deps:
+     plugin: nil
+     stage-packages:
+       - lame
+       - pulseaudio-utils
    snap-launcher:
      plugin: dump
      source: snap_launcher/
