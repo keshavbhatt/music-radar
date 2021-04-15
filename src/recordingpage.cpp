@@ -42,7 +42,6 @@ void RecordingPage::animate()
     QGraphicsOpacityEffect *eff = new QGraphicsOpacityEffect(this);
     this->setGraphicsEffect(eff);
 
-    this->hide();
     QPropertyAnimation *a = new QPropertyAnimation(this->graphicsEffect(),"opacity");
     a->setDuration(400);
     a->setStartValue(0);
@@ -53,7 +52,7 @@ void RecordingPage::animate()
        eff->deleteLater();
     });
     this->show();
-
+    qApp->processEvents();
 }
 
 
@@ -106,7 +105,6 @@ void RecordingPage::startRecording(QString selectedDevice)
     connect(recordingProcess,&QProcess::readyRead,[=]()
     {
         QString bytes = recordingProcess->readAll();
-        //qDebug()<<bytes;
         if(QString(bytes).contains("Time",Qt::CaseInsensitive))
         {
             ui->statusLabel->setText(QString(bytes).split(";").first().trimmed().simplified());
@@ -125,7 +123,7 @@ void RecordingPage::startRecording(QString selectedDevice)
             QFileInfo info(recordingFileName);
             if(info.size() < 800)
             {
-                QMessageBox::critical(this,"Error","Recorded file is empty.");
+                QMessageBox::critical(this,"Error","Recorded file is empty.\nIf you installed using snapd make sure you enable audio-record permission.");
                 stopRecording();
                 emit back();
             }
