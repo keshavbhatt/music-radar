@@ -79,7 +79,6 @@ MainWindow::MainWindow(QWidget *parent) :
        recordingPageWidget->animate();
        recordingPageWidget->stopRecording();
        recordingPageWidget->startRecording(selectedDevice);
-       qApp->processEvents();
     });
 
     ui->stackedWidget->addWidget(homeWidget);
@@ -125,6 +124,7 @@ void MainWindow::createActions()
     {
         backAction->setEnabled(false);
         emit recordingPageWidget->enableItemActions(false);
+        recordingPageWidget->cancelAllRequests();
         recordingPageWidget->clearDebug();
         recordingPageWidget->stopRecording();
         recordingPageWidget->stopAllPlayers();
@@ -196,4 +196,3 @@ void MainWindow::showAbout()
     about->setAttribute(Qt::WA_DeleteOnClose);
     about->show();
 }
-

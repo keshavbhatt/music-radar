@@ -35,6 +35,7 @@ private slots:
 
     void showSettings();
     void init_settings();
+
 private:
     Ui::MainWindow *ui;
 
