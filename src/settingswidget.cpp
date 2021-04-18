@@ -9,6 +9,10 @@ SettingsWidget::SettingsWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->autoFinishDurationSpinBox->blockSignals(true);
+    ui->autoFinishDurationSpinBox->setRange(5,25);
+    ui->autoFinishDurationSpinBox->blockSignals(false);
+
     ui->infoLabel->setText(ui->infoLabel->text().arg(QApplication::applicationName()));
 
     QString t = "";
@@ -20,6 +24,8 @@ SettingsWidget::SettingsWidget(QWidget *parent) :
         QByteArray base64EncodedKey = settings.value("yek",t.toUtf8().toBase64()).toByteArray();
         ui->keyLineEdit->setText(QString(QByteArray::fromBase64(base64EncodedKey)));
     }
+
+    ui->autoFinishDurationSpinBox->setValue(settings.value("autoFinishDuration",10).toInt());
 
     ui->saveKeys->setEnabled(false);
 
@@ -83,4 +89,10 @@ void SettingsWidget::on_keyLineEdit_textChanged(const QString &arg1)
 void SettingsWidget::on_themeCombo_currentIndexChanged(int index)
 {
     settings.setValue("theme",index);
+}
+
+void SettingsWidget::on_autoFinishDurationSpinBox_valueChanged(int arg1)
+{
+    ui->autoFinishDurationSpinBox->setSuffix(QString(arg1 < 2 ? " second":" seconds"));
+    settings.setValue("autoFinishDuration",arg1);
 }

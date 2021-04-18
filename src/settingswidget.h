@@ -30,6 +30,8 @@ private slots:
 
     void on_themeCombo_currentIndexChanged(int index);
 
+    void on_autoFinishDurationSpinBox_valueChanged(int arg1);
+
 private:
     Ui::SettingsWidget *ui;
     QSettings settings;
