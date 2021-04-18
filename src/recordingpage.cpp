@@ -23,7 +23,7 @@ RecordingPage::RecordingPage(QWidget *parent) :
     ui->waveformWidget->hide();
 
     // loader is the child of results
-    _loader = new WaitingSpinnerWidget(ui->resultListWidget,true,false);
+    _loader = new WaitingSpinnerWidget(ui->resultListWidget,true,true);
     _loader->setRoundness(70.0);
     _loader->setMinimumTrailOpacity(15.0);
     _loader->setTrailFadePercentage(70.0);
@@ -47,12 +47,10 @@ void RecordingPage::animate()
     a->setStartValue(0);
     a->setEndValue(1);
     a->setEasingCurve(QEasingCurve::InCurve);
-    a->start(QPropertyAnimation::DeleteWhenStopped);
     connect(a,&QPropertyAnimation::finished,[this,eff](){
        eff->deleteLater();
     });
-    this->show();
-    qApp->processEvents();
+    a->start(QPropertyAnimation::DeleteWhenStopped);
 }
 
 
@@ -108,7 +106,8 @@ void RecordingPage::startRecording(QString selectedDevice)
         if(QString(bytes).contains("Time",Qt::CaseInsensitive))
         {
             ui->statusLabel->setText(QString(bytes).split(";").first().trimmed().simplified());
-            if(ui->statusLabel->text().contains(" 20.")) //dirty
+            QString breaker = " "+QString::number(settings.value("autoFinishDuration",10).toInt())+".";
+            if(ui->statusLabel->text().contains(breaker))
                 on_cancelButton_clicked();
         }else{
             debug.append(bytes);
@@ -143,6 +142,9 @@ void RecordingPage::startRecording(QString selectedDevice)
     }else{
         ui->cancelButton->show();
     }
+
+    //required to update widget
+    this->repaint();
 }
 
 void RecordingPage::showHistory()
@@ -383,6 +385,17 @@ void RecordingPage::stopAllPlayers()
                     player->stop();
             }
         }
+    }
+}
+
+void RecordingPage::cancelAllRequests()
+{
+    foreach (auto &reply, networkManager->findChildren<QNetworkReply *>()) {
+        if (! reply->isReadable()) {
+                return;
+        }
+        reply->abort();
+        //reply->deleteLater(); //disabled cause we using global obj
     }
 }
 

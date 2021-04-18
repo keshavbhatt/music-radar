@@ -34,6 +34,7 @@ public slots:
     void clearDebug();
     void deleteSelected();
     void showItemInfo();
+    void cancelAllRequests();
 signals:
     void back();
     void enableItemActions(bool enable =  false);
