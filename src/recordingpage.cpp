@@ -395,7 +395,7 @@ void RecordingPage::cancelAllRequests()
                 return;
         }
         reply->abort();
-        //reply->deleteLater(); //disabled cause we using global obj
+        reply->deleteLater();
     }
 }
 
