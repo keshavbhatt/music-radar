@@ -16,6 +16,11 @@ RecordingPage::RecordingPage(QWidget *parent) :
 
     networkManager = new QNetworkAccessManager(this);
 
+    QNetworkDiskCache *diskCache = new QNetworkDiskCache(this);
+    diskCache->setCacheDirectory(QStandardPaths::writableLocation(
+                                     QStandardPaths::CacheLocation));
+    networkManager->setCache(diskCache);
+
     recordingFileName = utils::returnPath("temp")+"temp.mp3";
     historyPath       = utils::returnPath("history");
 
@@ -335,7 +340,7 @@ void RecordingPage::uploadFinished(bool fromHistory, QString historyItemFilePath
         QString spotify_url     =  spotifyObj.value("uri").toString();
 
         //add to results
-        SongItem *songItem = new SongItem(ui->resultListWidget);
+        SongItem *songItem = new SongItem(ui->resultListWidget,this->networkManager);
         songItem->setObjectName("item_"+itemId);
         connect(songItem,SIGNAL(stopAllPlayers()),this,SLOT(stopAllPlayers()));
         songItem->adjustSize();
