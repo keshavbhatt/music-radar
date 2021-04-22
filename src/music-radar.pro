@@ -45,7 +45,7 @@ SOURCES += \
         qaudiolevel.cpp \
         qaudiowaveform.cpp \
         recordingpage.cpp \
-        remotepixmaplabel.cpp \
+        remotepixmaplabel2.cpp \
         rungaurd.cpp \
         settingswidget.cpp \
         songitem.cpp \
@@ -62,7 +62,7 @@ HEADERS += \
         qaudiolevel.h \
         qaudiowaveform.h \
         recordingpage.h \
-        remotepixmaplabel.h \
+        remotepixmaplabel2.h \
         rungaurd.h \
         settingswidget.h \
         songitem.h \
