@@ -5,11 +5,13 @@
 #include <QDesktopServices>
 #include <QGraphicsOpacityEffect>
 
-SongItem::SongItem(QWidget *parent) :
+SongItem::SongItem(QWidget *parent, QNetworkAccessManager *manager) :
     QWidget(parent),
     ui(new Ui::SongItem)
 {
     ui->setupUi(this);
+
+    this->networkManager_ = manager;
 
     animate();
 }
@@ -39,7 +41,7 @@ void SongItem::init(QString artist,QString title,QString album,QString release_d
     this->artist          = artist;
     this->spotify_url     = spotify_url;
 
-    ui->cover->setRemotePixmap(iconUrl,"qrc:///icons/app/icon-256.png");
+    ui->cover->init(this->networkManager_,iconUrl,"qrc:///icons/app/icon-256.png");
     ui->titleLabel->setText(title);
     ui->artistLabel->setText("by: "+artist);
     ui->albumLabel->setText("from: "+album+" ("+release_date+")");

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QMediaPlayer>
+#include <QtNetwork>
 
 namespace Ui {
 class SongItem;
@@ -13,7 +14,7 @@ class SongItem : public QWidget
     Q_OBJECT
 
 public:
-    explicit SongItem(QWidget *parent = nullptr);
+    explicit SongItem(QWidget *parent = nullptr, QNetworkAccessManager *manager = nullptr);
     ~SongItem();
 
 signals:
@@ -39,6 +40,7 @@ private:
     Ui::SongItem *ui;
     QString preview_url, title, artist, spotify_url;
     QMediaPlayer *player = nullptr;
+    QNetworkAccessManager *networkManager_ = nullptr;
 };
 
 #endif // SONGITEM_H
