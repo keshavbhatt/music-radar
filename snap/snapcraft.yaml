@@ -8,6 +8,8 @@ confinement: strict
 icon: snap/gui/icon.png
 base: core18
 
+compression: lzo
+
 architectures:
   - build-on: amd64
     run-on: amd64
