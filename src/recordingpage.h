@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QtNetwork>
 #include <QTime>
+#include <QElapsedTimer>
 #include <QListWidget>
 
 #include "waitingspinnerwidget.h"
@@ -66,7 +67,7 @@ private:
 
     QNetworkAccessManager *networkManager;
     QNetworkReply *networkReply;
-    QTime m_timeAdded;
+    QElapsedTimer m_timeAdded;
 
     WaitingSpinnerWidget *_loader = nullptr;
 

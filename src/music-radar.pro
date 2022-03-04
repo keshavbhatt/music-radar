@@ -44,6 +44,7 @@ SOURCES += \
         pulseutils.cpp \
         qaudiolevel.cpp \
         qaudiowaveform.cpp \
+        rateapp.cpp \
         recordingpage.cpp \
         remotepixmaplabel2.cpp \
         rungaurd.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
         pulseutils.h \
         qaudiolevel.h \
         qaudiowaveform.h \
+        rateapp.h \
         recordingpage.h \
         remotepixmaplabel2.h \
         rungaurd.h \
@@ -75,6 +77,7 @@ FORMS += \
         iteminfowidget.ui \
         mainwindow.ui \
         qaudiowaveform.ui \
+        rateapp.ui \
         recordingpage.ui \
         settingswidget.ui \
         songitem.ui
