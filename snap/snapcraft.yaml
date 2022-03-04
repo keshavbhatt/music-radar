@@ -6,19 +6,30 @@ description: |
 grade: stable
 confinement: strict
 icon: snap/gui/icon.png
-base: core18
-
+base: core20
 compression: lzo
 
 architectures:
   - build-on: amd64
     run-on: amd64
 
+environment:
+  SNAP_DESKTOP_RUNTIME: $SNAP/qt515-core20
+
+package-repositories:
+  - type: apt
+    formats: [deb]
+    components: [main]
+    suites: [focal]
+    key-id: C65D51784EDC19A871DBDBB710C56D0DE9977759
+    url: https://ppa.launchpadcontent.net/beineri/opt-qt-5.15.2-focal/ubuntu
+
 apps:
   music-radar:
-    command: desktop-launch music-radar
+    command: bin/desktop-launch $SNAP/usr/bin/music-radar
     environment:
-       DISABLE_WAYLAND: 1
+       IS_SNAP: 1
+       QT_QPA_PLATFORMTHEME: gtk3
     desktop: usr/share/applications/music-radar.desktop
     plugs:
         - desktop
@@ -46,22 +57,60 @@ plugs:
     interface: content
     target: $SNAP/data-dir/sounds
     default-provider: gtk-common-themes
-  qt513:
+  qt515-core20:
     interface: content
-    target: $SNAP/qt513
-    default-provider: qt513
+    target: $SNAP/qt515-core20
+    default-provider: qt515-core20
 
 parts:
-   deps:
+   build-src:
      plugin: nil
+     source: https://github.com/keshavbhatt/music-radar.git
+     source-subdir: src/
      stage-packages:
-       - lame
-       - pulseaudio-utils
-   snap-launcher:
-     plugin: dump
-     source: snap_launcher/
+           - pulseaudio-utils
      override-build: |
             snapcraftctl build
-            sed -i 's|Icon=.*|Icon=${SNAP}/meta/gui/icon.png|g' ${SNAPCRAFT_PART_SRC}/music-radar.desktop
+
+            apt install -y build-essential qt515base qt515multimedia libgl1-mesa-dev
+
+            QT_BASE_DIR=/opt/qt515
+            export QTDIR=$QT_BASE_DIR
+            export PATH=$QT_BASE_DIR/bin:$PATH
+
+            if [[ $(uname -m) == "x86_64" ]]; then
+              export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+            else
+              export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/i386-linux-gnu:$QT_BASE_DIR/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+            fi
+
+            export PKG_CONFIG_PATH=$QT_BASE_DIR/lib/pkgconfig:${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
+
+            which qmake
+
+            mkdir -p ${SNAPCRAFT_PART_INSTALL}/usr/bin/
+
+            /opt/qt515/bin/qmake src
+
+            make -j4
+
+            /opt/qt515/bin/qmake -install qinstall -exe whatsie ${SNAPCRAFT_PART_INSTALL}/usr/bin/music-radar
+
+            strip ${SNAPCRAFT_PART_INSTALL}/usr/bin/music-radar
+
+            sed -i 's|Icon=.*|Icon=${SNAP}/meta/gui/icon.png|g' ${SNAPCRAFT_PART_SRC}/src/music-radar.desktop
+
             mkdir -p ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/
-            cp -rf ${SNAPCRAFT_PART_SRC}/music-radar.desktop ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/music-radar.desktop
+
+            cp -rf ${SNAPCRAFT_PART_SRC}/src/music-radar.desktop ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/music-radar.desktop
+
+   desktop-launch:
+     plugin: nil
+     source: https://github.com/keshavbhatt/qt515-core20.git
+     after: [build-src]
+     override-build: |
+            snapcraftctl build
+
+            mkdir -p ${SNAPCRAFT_PART_INSTALL}/bin/
+
+            cp -rf ${SNAPCRAFT_PART_SRC}/snap_launcher/bin/desktop-launch ${SNAPCRAFT_PART_INSTALL}/bin/
