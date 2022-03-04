@@ -69,6 +69,7 @@ parts:
      source-subdir: src/
      stage-packages:
            - pulseaudio-utils
+           - lame
      override-build: |
             snapcraftctl build
 
