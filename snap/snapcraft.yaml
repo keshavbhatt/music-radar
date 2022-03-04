@@ -94,7 +94,7 @@ parts:
 
             make -j4
 
-            /opt/qt515/bin/qmake -install qinstall -exe whatsie ${SNAPCRAFT_PART_INSTALL}/usr/bin/music-radar
+            /opt/qt515/bin/qmake -install qinstall -exe music-radar ${SNAPCRAFT_PART_INSTALL}/usr/bin/music-radar
 
             strip ${SNAPCRAFT_PART_INSTALL}/usr/bin/music-radar
 
