@@ -20,15 +20,6 @@ apps:
     command: usr/bin/music-radar
     extensions: [kde-neon-6]
     desktop: usr/share/applications/music-radar.desktop
-    environment:
-      # The recording pipeline shells out to the bundled parec/lame
-      PATH: $SNAP/usr/bin:$SNAP/usr/local/bin:$PATH
-      # kf6-core24's desktop-launch6 does not register the runtime's GIO
-      # modules; without glib-networking, libsoup has no TLS backend and
-      # GStreamer fails https streams with "Resource cannot be discovered".
-      # Both arch dirs listed (runtime env has no triplet variable); GLib
-      # silently skips the one that doesn't exist.
-      GIO_EXTRA_MODULES: $SNAP/kf6/usr/lib/x86_64-linux-gnu/gio/modules:$SNAP/kf6/usr/lib/aarch64-linux-gnu/gio/modules
     plugs:
       - audio-playback
       - audio-record
