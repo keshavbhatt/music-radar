@@ -1,7 +1,9 @@
 #include "songitem.h"
 #include "ui_songitem.h"
 
-#include <QDesktopServices>
+#include "utils.h"
+
+#include <QAudioOutput>
 #include <QGraphicsOpacityEffect>
 #include <QMessageBox>
 
@@ -56,10 +58,13 @@ void SongItem::on_playButton_clicked() {
 
   if (player == nullptr) {
     player = new QMediaPlayer(this);
-    player->setMedia(QUrl(this->preview_url));
-    player->setVolume(100);
-    connect(player, &QMediaPlayer::stateChanged, player,
-            [=](QMediaPlayer::State state) {
+    // Qt 6: players need an explicit audio output, and volume moved there
+    QAudioOutput *audioOutput = new QAudioOutput(player);
+    audioOutput->setVolume(1.0);
+    player->setAudioOutput(audioOutput);
+    player->setSource(QUrl(this->preview_url));
+    connect(player, &QMediaPlayer::playbackStateChanged, player,
+            [=](QMediaPlayer::PlaybackState state) {
               if (state == QMediaPlayer::StoppedState) {
                 ui->playButton->setIcon(QIcon(":/icons/play-line.png"));
               }
@@ -78,15 +83,15 @@ void SongItem::on_playButton_clicked() {
               }
             });
 
-    connect(player, QOverload<QMediaPlayer::Error>::of(&QMediaPlayer::error),
-            player, [=](QMediaPlayer::Error error) {
+    connect(player, &QMediaPlayer::errorOccurred, player,
+            [=](QMediaPlayer::Error error, const QString &errorString) {
               Q_UNUSED(error);
               ui->playButton->setIcon(QIcon(":/icons/play-line.png"));
-              QMessageBox::critical(this, "Error", player->errorString());
+              QMessageBox::critical(this, "Error", errorString);
             });
   }
 
-  if (player->state() != QMediaPlayer::PlayingState) {
+  if (player->playbackState() != QMediaPlayer::PlayingState) {
     emit stopAllPlayers();
     player->play();
   } else {
@@ -99,11 +104,10 @@ void SongItem::on_playButton_clicked() {
 
 void SongItem::on_youtubeButton_clicked() {
   QString term = title.replace(" ", "+") + ", " + artist.replace(" ", "+");
-  QDesktopServices::openUrl(
-      QUrl("https://www.youtube.com/results?search_query=" + term +
-           "&sp=EgIQAQ%253D%253D"));
+  utils::desktopOpenUrl("https://www.youtube.com/results?search_query=" +
+                        term + "&sp=EgIQAQ%253D%253D");
 }
 
 void SongItem::on_spotifyButton_clicked() {
-  QDesktopServices::openUrl(QUrl(this->spotify_url));
+  utils::desktopOpenUrl(this->spotify_url);
 }

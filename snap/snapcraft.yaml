@@ -1,117 +1,50 @@
 name: music-radar
-version: git
+base: core24
+version: '1.1'
 summary: Music Recognition app for Linux Desktop
 description: |
-  Music Radar is a little music recognition app for Linux Desktop, record music from your microphone or system to identify the song playing.
+  Music Radar is a little music recognition app for Linux Desktop, record
+  music from your microphone or system to identify the song playing.
+
 grade: stable
 confinement: strict
 icon: snap/gui/icon.png
-base: core20
 compression: lzo
 
-architectures:
-  - build-on: amd64
-    run-on: amd64
-
-environment:
-  SNAP_DESKTOP_RUNTIME: $SNAP/qt515-core20
-
-package-repositories:
-  - type: apt
-    formats: [deb]
-    components: [main]
-    suites: [focal]
-    key-id: C65D51784EDC19A871DBDBB710C56D0DE9977759
-    url: https://ppa.launchpadcontent.net/beineri/opt-qt-5.15.2-focal/ubuntu
+platforms:
+  amd64:
+  arm64:
 
 apps:
   music-radar:
-    command: bin/desktop-launch $SNAP/usr/bin/music-radar
-    environment:
-       IS_SNAP: 1
-       QT_QPA_PLATFORMTHEME: gtk3
+    command: usr/bin/music-radar
+    extensions: [kde-neon-6]
     desktop: usr/share/applications/music-radar.desktop
+    environment:
+      # The recording pipeline shells out to the bundled parec/lame
+      PATH: $SNAP/usr/bin:$SNAP/usr/local/bin:$PATH
     plugs:
-        - desktop
-        - desktop-legacy
-        - gsettings
-        - home
-        - opengl
-        - audio-playback
-        - audio-record
-        - unity7
-        - x11
-        - network
-        - wayland
-plugs:
-  gsettings:
-  gtk-3-themes:
-    interface: content
-    target: $SNAP/data-dir/themes
-    default-provider: gtk-common-themes
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes
-  sound-themes:
-    interface: content
-    target: $SNAP/data-dir/sounds
-    default-provider: gtk-common-themes
-  qt515-core20:
-    interface: content
-    target: $SNAP/qt515-core20
-    default-provider: qt515-core20
+      - audio-playback
+      - audio-record
+      - gsettings
+      - home
+      - network
+      - opengl
+      - unity7
+      - wayland
+      - x11
 
 parts:
-   build-src:
-     plugin: nil
-     source: https://github.com/keshavbhatt/music-radar.git
-     source-subdir: src/
-     stage-packages:
-           - pulseaudio-utils
-           - lame
-     override-build: |
-            snapcraftctl build
-
-            apt install -y build-essential qt515base qt515multimedia libgl1-mesa-dev
-
-            QT_BASE_DIR=/opt/qt515
-            export QTDIR=$QT_BASE_DIR
-            export PATH=$QT_BASE_DIR/bin:$PATH
-
-            if [[ $(uname -m) == "x86_64" ]]; then
-              export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-            else
-              export LD_LIBRARY_PATH=$QT_BASE_DIR/lib/i386-linux-gnu:$QT_BASE_DIR/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-            fi
-
-            export PKG_CONFIG_PATH=$QT_BASE_DIR/lib/pkgconfig:${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
-
-            which qmake
-
-            mkdir -p ${SNAPCRAFT_PART_INSTALL}/usr/bin/
-
-            /opt/qt515/bin/qmake src
-
-            make -j4
-
-            /opt/qt515/bin/qmake -install qinstall -exe music-radar ${SNAPCRAFT_PART_INSTALL}/usr/bin/music-radar
-
-            strip ${SNAPCRAFT_PART_INSTALL}/usr/bin/music-radar
-
-            sed -i 's|Icon=.*|Icon=${SNAP}/meta/gui/icon.png|g' ${SNAPCRAFT_PART_SRC}/src/music-radar.desktop
-
-            mkdir -p ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/
-
-            cp -rf ${SNAPCRAFT_PART_SRC}/src/music-radar.desktop ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/music-radar.desktop
-
-   desktop-launch:
-     plugin: nil
-     source: https://github.com/keshavbhatt/qt515-core20.git
-     after: [build-src]
-     override-build: |
-            snapcraftctl build
-
-            mkdir -p ${SNAPCRAFT_PART_INSTALL}/bin/
-
-            cp -rf ${SNAPCRAFT_PART_SRC}/snap_launcher/bin/desktop-launch ${SNAPCRAFT_PART_INSTALL}/bin/
+  application:
+    plugin: cmake
+    source: .
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_BUILD_TYPE=Release
+    stage-packages:
+      # Recording pipeline: parec (pulseaudio-utils) piped into lame
+      - pulseaudio-utils
+      - lame
+    override-build: |
+      craftctl default
+      sed -i 's|^Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/512x512/apps/music-radar.png|' ${CRAFT_PART_INSTALL}/usr/share/applications/music-radar.desktop

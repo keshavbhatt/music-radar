@@ -94,6 +94,7 @@ void RecordingPage::startRecording(QString selectedDevice) {
   ui->cancelButton->show();
 
   QProcess *recordingProcess = new QProcess(this);
+  recordingProcess->setProcessEnvironment(utils::childProcessEnvironment());
   recordingProcess->setProcessChannelMode(QProcess::MergedChannels);
   connect(recordingProcess, &QProcess::readyRead, [=]() {
     QString bytes = recordingProcess->readAll();

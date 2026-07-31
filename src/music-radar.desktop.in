@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+GenericName=@APP_NAME@
+Name[en_US]=@APP_NAME@
+Comment=Music recognition app
+Name=@APP_NAME@
+Type=Application
+Icon=@APP_EXECUTABLE_NAME@
+Keywords=Shazam;Recognition;Music
+Exec=@APP_EXECUTABLE_NAME@ %F
+Categories=Audio;Qt;
+Terminal=false
+StartupNotify=false

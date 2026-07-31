@@ -1,8 +1,11 @@
 #include "utils.h"
 #include <QApplication>
 #include <QDateTime>
+#include <QDesktopServices>
 #include <QMessageBox>
+#include <QProcess>
 #include <QProcessEnvironment>
+#include <QUrl>
 #include <QRandomGenerator>
 #include <QRegularExpression>
 #include <time.h>
@@ -90,7 +93,7 @@ QString utils::genRand(int length) {
   const QString possibleCharacters(
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" +
       QString::number(cd.currentMSecsSinceEpoch())
-          .remove(QRegExp("[^a-zA-Z\\d\\s]")));
+          .remove(QRegularExpression("[^a-zA-Z\\d\\s]")));
 
   const int randomStringLength = length;
   QString randomString;
@@ -125,7 +128,7 @@ QString utils::convertSectoDay(qint64 secs) {
 // static on demand path maker
 QString utils::returnPath(QString pathname) {
   QString _data_path =
-      QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+      QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
   if (!QDir(_data_path + "/" + pathname).exists()) {
     QDir d(_data_path + "/" + pathname);
     d.mkpath(_data_path + "/" + pathname);
@@ -283,4 +286,40 @@ QJsonDocument utils::loadJson(QString fileName) {
   } else {
     return QJsonDocument();
   }
+}
+
+// Environment for child processes (xdg-open, pactl, parec|lame, ...).
+// Outside a snap, drop the library overrides a dev run exports for the app
+// itself — host tools crash when forced onto the snap runtime's libraries
+// (e.g. /bin/sh against core24's libreadline). Inside a snap, children must
+// keep the snap environment untouched.
+QProcessEnvironment utils::childProcessEnvironment() {
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  if (!env.contains("SNAP")) {
+    env.remove("LD_LIBRARY_PATH");
+    env.remove("QT_PLUGIN_PATH");
+  }
+  return env;
+}
+
+void utils::desktopOpenUrl(const QString str) {
+  QProcess *xdg_open = new QProcess(0);
+  xdg_open->setProcessEnvironment(childProcessEnvironment());
+  xdg_open->start("xdg-open", QStringList() << str);
+  if (xdg_open->waitForStarted(1000) == false) {
+    // try using QdesktopServices
+    bool opened = QDesktopServices::openUrl(QUrl(str));
+    if (opened == false) {
+      qWarning() << "failed to open url" << str;
+    }
+  }
+  QObject::connect(xdg_open,
+                   static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(
+                       &QProcess::finished),
+                   [xdg_open](int exitCode, QProcess::ExitStatus exitStatus) {
+                     Q_UNUSED(exitCode);
+                     Q_UNUSED(exitStatus);
+                     xdg_open->close();
+                     xdg_open->deleteLater();
+                   });
 }

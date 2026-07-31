@@ -1,7 +1,6 @@
 #include "home.h"
 #include "ui_home.h"
 
-#include <QAudioDeviceInfo>
 #include <QDebug>
 #include <QGraphicsOpacityEffect>
 #include <QMessageBox>

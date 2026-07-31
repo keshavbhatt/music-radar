@@ -24,8 +24,6 @@ private:
 
     QVector<HighlightingRule> rules_;
 
-    QRegExp commentStartExpression;
-    QRegExp commentEndExpression;
 
     QTextCharFormat keywordFormat;
     QTextCharFormat classFormat;

@@ -1,6 +1,5 @@
 #include "about.h"
 #include "ui_about.h"
-#include <QDesktopServices>
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
 #include <QUrl>
@@ -20,7 +19,7 @@ About::About(QWidget *parent) :
     appAuthorEmail      = "keshavnrj@gmail.com";
     appAuthorLink       = "http://ktechpit.com";
     donateLink          = "https://paypal.me/keshavnrj/10";
-    moreAppsLink        = "https://snapcraft.io/search?q=keshavnrj";
+    moreAppsLink        = "https://ktechpit.com/USS/public/products.php";
 
     appSourceCodeLink   = "https://github.com/keshavbhatt/music-radar";
     appRateLink         = "snap://music-radar";
@@ -53,17 +52,17 @@ About::About(QWidget *parent) :
     }
 
     connect(ui->donate,&QPushButton::clicked,[=](){
-        QDesktopServices::openUrl(QUrl(donateLink));
+        utils::desktopOpenUrl(donateLink);
     });
 
     connect(ui->rate,&QPushButton::clicked,[=](){
-        QDesktopServices::openUrl(QUrl(appRateLink));
+        utils::desktopOpenUrl(appRateLink);
     });
     connect(ui->more_apps,&QPushButton::clicked,[=](){
-        QDesktopServices::openUrl(QUrl(moreAppsLink));
+        utils::desktopOpenUrl(moreAppsLink);
     });
     connect(ui->source_code,&QPushButton::clicked,[=](){
-        QDesktopServices::openUrl(QUrl(appSourceCodeLink));
+        utils::desktopOpenUrl(appSourceCodeLink);
     });
 
     setWindowTitle(QApplication::applicationName() +" | About");

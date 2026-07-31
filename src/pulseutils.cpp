@@ -1,4 +1,5 @@
 #include "pulseutils.h"
+#include "utils.h"
 #include <QDebug>
 
 PulseUtils::PulseUtils(QObject *parent) : QObject(parent) {}
@@ -9,6 +10,10 @@ QString PulseUtils::getDefaultSource() {
   QProcess pactl;
   QProcess grep;
   QProcess sed;
+  const QProcessEnvironment env = utils::childProcessEnvironment();
+  pactl.setProcessEnvironment(env);
+  grep.setProcessEnvironment(env);
+  sed.setProcessEnvironment(env);
   pactl.setStandardOutputProcess(&grep);
   grep.setStandardOutputProcess(&sed);
 
@@ -32,6 +37,10 @@ QString PulseUtils::getDefaultSink() {
   QProcess pactl;
   QProcess grep;
   QProcess sed;
+  const QProcessEnvironment env = utils::childProcessEnvironment();
+  pactl.setProcessEnvironment(env);
+  grep.setProcessEnvironment(env);
+  sed.setProcessEnvironment(env);
   pactl.setStandardOutputProcess(&grep);
   grep.setStandardOutputProcess(&sed);
 
