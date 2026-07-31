@@ -29,6 +29,16 @@ done
 
 export LD_LIBRARY_PATH="$RT/usr/lib/x86_64-linux-gnu:$RT/usr/lib/x86_64-linux-gnu/libproxy:$RT/usr/lib/x86_64-linux-gnu/pulseaudio:$FARM${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export QT_PLUGIN_PATH="$RT/usr/lib/x86_64-linux-gnu/qt6/plugins"
+# Multimedia support paths. Inside the shipped snap the kde-neon-6
+# extension's desktop-launch6 exports all of these; replicate them for
+# host runs. Without them: pipewire aborts on "support.system handle",
+# and https previews fail ("Resource cannot be discovered") because
+# libsoup finds no GIO TLS module.
+export SPA_PLUGIN_DIR="$RT/usr/lib/x86_64-linux-gnu/spa-0.2"
+export PIPEWIRE_MODULE_DIR="$RT/usr/lib/x86_64-linux-gnu/pipewire-0.3"
+export GST_PLUGIN_SYSTEM_PATH="$RT/usr/lib/x86_64-linux-gnu/gstreamer-1.0"
+export GST_REGISTRY="$DIR/build/dev/gst-registry.bin"
+export GIO_MODULE_DIR="$RT/usr/lib/x86_64-linux-gnu/gio/modules"
 # This Qt build logs to journald when stderr is not a TTY; for dev runs we
 # want plain stderr (file-capturable).
 export QT_FORCE_STDERR_LOGGING=1
