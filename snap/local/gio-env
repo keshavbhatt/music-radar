@@ -6,4 +6,9 @@
 for d in "$SNAP"/kf6/usr/lib/*-linux-gnu/gio/modules; do
     [ -d "$d" ] && export GIO_EXTRA_MODULES="${GIO_EXTRA_MODULES:+$GIO_EXTRA_MODULES:}$d"
 done
+# The same module dir also ships glib-networking's proxy resolvers, which
+# detect the sandbox and route lookups through the XDG portal — a call that
+# fails under snap confinement (org.freedesktop.portal.Error.NotAllowed)
+# and kills every request. Force the direct resolver; TLS stays enabled.
+export GIO_USE_PROXY_RESOLVER=dummy
 exec "$@"
