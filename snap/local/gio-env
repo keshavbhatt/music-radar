@@ -1,0 +1,9 @@
+#!/bin/sh
+# kf6-core24's desktop-launch6 does not register the runtime's GIO modules;
+# without glib-networking, libsoup has no TLS backend and GStreamer fails
+# https streams with "Resource cannot be discovered". Resolve the runtime's
+# module dir arch-agnostically and hand over to the real command.
+for d in "$SNAP"/kf6/usr/lib/*-linux-gnu/gio/modules; do
+    [ -d "$d" ] && export GIO_EXTRA_MODULES="${GIO_EXTRA_MODULES:+$GIO_EXTRA_MODULES:}$d"
+done
+exec "$@"

@@ -18,6 +18,8 @@ platforms:
 apps:
   music-radar:
     command: usr/bin/music-radar
+    # gio-env registers the runtime's GIO modules (TLS for https streams)
+    command-chain: [bin/gio-env]
     extensions: [kde-neon-6]
     desktop: usr/share/applications/music-radar.desktop
     plugs:
@@ -51,3 +53,9 @@ parts:
     override-build: |
       craftctl default
       sed -i 's|^Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/512x512/apps/music-radar.png|' ${CRAFT_PART_INSTALL}/usr/share/applications/music-radar.desktop
+
+  launcher:
+    plugin: dump
+    source: snap/local
+    organize:
+      gio-env: bin/gio-env
